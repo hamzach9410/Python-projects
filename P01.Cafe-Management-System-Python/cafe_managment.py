@@ -13,7 +13,11 @@ def restaurant_management():
         "Coffee": 80,
         "Zinger Burger": 320,
         "Hot Wings": 600,
-        "Cake": 450
+        "Cake": 450,
+        "Chips": 150,
+        "Coke": 70,
+        "Pasta": 400,
+        "Ice Cream": 200
     }
     
     cart = []  # store ordered items
