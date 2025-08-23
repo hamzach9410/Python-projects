@@ -47,3 +47,9 @@ def restaurant_management():
 
 
 restaurant_management()
+
+
+print("Thank you for visiting RUMI Restaurant!")# Thank you message
+
+
+# Code by RUMI  
