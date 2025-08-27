@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poll Voter UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .spinner {
+        display: none;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        margin: auto;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
+        Poll Voter
+      </h1>
+      <form id="vote-form" class="space-y-4">
+        <div>
+          <label for="poll_url" class="block text-sm font-medium text-gray-700"
+            >Poll URL</label
+          >
+          <input
+            type="url"
+            id="poll_url"
+            name="poll_url"
+            required
+            placeholder="https://www.instagram.com/stories/account/story_id"
+            class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label
+            for="option_name"
+            class="block text-sm font-medium text-gray-700"
+            >Option Name</label
+          >
+          <input
+            type="text"
+            id="option_name"
+            name="option_name"
+            required
+            placeholder="e.g., A"
+            class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label
+            for="submit_selector"
+            class="block text-sm font-medium text-gray-700"
+            >Submit Button CSS Selector</label
+          >
+          <input
+            type="text"
+            id="submit_selector"
+            name="submit_selector"
+            required
+            placeholder="e.g., leave blank or use .poll-submit"
+            class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label for="max_votes" class="block text-sm font-medium text-gray-700"
+            >Number of Votes</label
+          >
+          <input
+            type="number"
+            id="max_votes"
+            name="max_votes"
+            min="1"
+            value="10"
+            required
+            class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
+        >
+          <span id="button-text">Start Voting</span>
+          <div id="spinner" class="spinner ml-2"></div>
+        </button>
+      </form>
+      <div id="result" class="mt-6 text-gray-700"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById("vote-form");
+      const resultDiv = document.getElementById("result");
+      const buttonText = document.getElementById("button-text");
+      const spinner = document.getElementById("spinner");
+      let isVoting = false;
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (isVoting) return;
+        isVoting = true;
+        buttonText.textContent = "Voting...";
+        spinner.style.display = "block";
+        resultDiv.innerHTML =
+          '<p class="text-blue-600">Voting in progress...</p>';
+
+        try {
+          const formData = new FormData(form);
+          const response = await fetch("/vote", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await response.json();
+
+          if (data.status === "success") {
+            resultDiv.innerHTML = `<p class="text-green-600 font-semibold">Successfully cast ${data.votes_cast} votes!</p>`;
+          } else {
+            resultDiv.innerHTML = `
+              <p class="text-yellow-600 font-semibold">Cast ${
+                data.votes_cast
+              } votes with issues:</p>
+              <ul class="list-disc pl-5 mt-2">
+                ${data.errors
+                  .map((error) => `<li class="text-red-600">${error}</li>`)
+                  .join("")}
+              </ul>`;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `<p class="text-red-600 font-semibold">Error: ${error.message}</p>`;
+        } finally {
+          buttonText.textContent = "Start Voting";
+          spinner.style.display = "none";
+          isVoting = false;
+        }
+      });
+    </script>
+  </body>
+</html>

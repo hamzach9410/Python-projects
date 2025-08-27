@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Test Poll</title>
+  </head>
+  <body>
+    <h1>MATCH 2</h1>
+    <form id="poll-form">
+      <input type="radio" id="option1" name="vote" value="A" />
+      <label for="option1">A</label><br />
+      <input type="radio" id="option2" name="vote" value="B" />
+      <label for="option2">B</label><br />
+      <button type="submit" id="submit">Vote</button>
+    </form>
+    <script>
+      document.getElementById("poll-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert("Vote submitted!");
+      });
+    </script>
+  </body>
+</html>
