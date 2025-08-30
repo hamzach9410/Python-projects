@@ -1,0 +1,5 @@
+Flask
+Flask-SocketIO
+eventlet
+yt-dlp
+eventlet>=0.30.0
